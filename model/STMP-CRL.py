@@ -4,9 +4,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-class AGREE(nn.Module):
+class STMP_CRL(nn.Module):
     def __init__(self, num_users, num_items, num_groups, embedding_dim, input_dim, hidden_size, num_layers, g_m_d,  member_event_dict, graph, GCN_layers, is_split, drop_ratio,temperature,lambda1):
-        super(AGREE, self).__init__()
+        super(STMP_CRL, self).__init__()
         self.userembeds = nn.Embedding(num_users, embedding_dim)
         self.itemembeds = nn.Embedding(num_items, embedding_dim)
         self.groupembeds = nn.Embedding(num_groups, embedding_dim)
