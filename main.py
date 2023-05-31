@@ -5,7 +5,7 @@ Main function
 '''
 from datetime import datetime
 
-from model.agree import AGREE
+from model.STMP_CRL import STMP_CRL
 import torch
 import torch.optim as optim
 
@@ -80,32 +80,32 @@ if __name__ == '__main__':
     n_layers = config.gcn_layers
     is_split = config.is_split
 
-    agree = AGREE(num_users, num_items, num_group, config.embedding_size, config.input_dim, config.hidden_size,
+    STMP_CRL = STMP_CRL(num_users, num_items, num_group, config.embedding_size, config.input_dim, config.hidden_size,
                   config.num_layers, g_m_d, user_item_serialization,
                   graph, n_layers, is_split, config.drop_ratio,config.temperature,config.lambda1)
-    agree.to(device)
+    STMP_CRL.to(device)
     maxEpoch = 0
     max_userHr5, max_userHr10, max_userNDCG5, max_userNDCG10 = 0, 0, 0, 0
     max_groupHr5, max_groupHr10, max_groupNDCG5, max_groupNDCG10 = 0, 0, 0, 0
     f = open(config.save_path, "w+")
     for epoch in range(config.epoch):
-        agree.train()
+        STMP_CRL.train()
         t1 = time()
-        loss_user = training(agree, dataset.get_user_dataloader(config.batch_size), epoch, config, 'user')
+        loss_user = training(STMP_CRL, dataset.get_user_dataloader(config.batch_size), epoch, config, 'user')
 
-        loss_group = training(agree, dataset.get_group_dataloader(config.batch_size), epoch, config, 'group')
+        loss_group = training(STMP_CRL, dataset.get_group_dataloader(config.batch_size), epoch, config, 'group')
 
         print("user and group training time is: [%.1f s]" % (time()-t1))
 
         t3 = time()
-        user_HR5, user_HR10, user_NDCG5, user_NDCG10 = evaluation(agree, helper, dataset.user_testRatings,
+        user_HR5, user_HR10, user_NDCG5, user_NDCG10 = evaluation(STMP_CRL, helper, dataset.user_testRatings,
                                                                   dataset.user_testNegatives, config.topK, 'user')
         t_user = time() - t3
         print(
             f"[Epoch {epoch+1}] User, Hit@{config.topK}: {user_HR5, user_HR10}, NDCG@{config.topK}: {user_NDCG5, user_NDCG10}, time:[{round(t_user,1)}]")
 
         t2 = time()
-        group_HR5, group_HR10, group_NDCG5, group_NDCG10 = evaluation(agree, helper, dataset.group_testRatings,
+        group_HR5, group_HR10, group_NDCG5, group_NDCG10 = evaluation(STMP_CRL, helper, dataset.group_testRatings,
                                                                       dataset.group_testNegatives, config.topK,
                                                                       'group')
         t_group = time() - t2
